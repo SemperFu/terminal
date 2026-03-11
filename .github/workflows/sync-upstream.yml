@@ -1,0 +1,118 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  actions: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      new_release: ${{ steps.check.outputs.new_release }}
+      upstream_tag: ${{ steps.check.outputs.upstream_tag }}
+    steps:
+      - name: Check for new upstream release
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Get latest stable release from Microsoft
+          LATEST=$(gh api repos/microsoft/terminal/releases --jq '[.[] | select(.prerelease == false)][0].tag_name')
+          echo "upstream_tag=$LATEST" >> $GITHUB_OUTPUT
+
+          # Get our latest cast release tag (or "none" if first run)
+          OUR_LATEST=$(gh api repos/${{ github.repository }}/releases/latest --jq '.tag_name' 2>/dev/null || echo "none")
+          echo "our_tag=$OUR_LATEST" >> $GITHUB_OUTPUT
+
+          # Compare versions
+          UPSTREAM_VER="${LATEST#v}"
+          OUR_VER="${OUR_LATEST#v}"
+          OUR_VER="${OUR_VER%-cast}"
+
+          if [ "$UPSTREAM_VER" = "$OUR_VER" ]; then
+            echo "new_release=false" >> $GITHUB_OUTPUT
+            echo "::notice::Already synced with $LATEST"
+          else
+            echo "new_release=true" >> $GITHUB_OUTPUT
+            echo "::notice::New upstream release: $LATEST (we have: $OUR_LATEST)"
+          fi
+
+  sync:
+    needs: check
+    if: needs.check.outputs.new_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync with upstream
+        id: sync
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git remote add upstream https://github.com/microsoft/terminal.git
+          git fetch upstream main --tags
+
+          # Rebase main onto upstream
+          git rebase upstream/main
+          git push origin main --force-with-lease
+
+          # Rebase feature branch onto updated main
+          git checkout feature/asciicast
+          git rebase main
+          git push origin feature/asciicast --force-with-lease
+
+          # Create cast tag
+          UPSTREAM_TAG="${{ needs.check.outputs.upstream_tag }}"
+          CAST_TAG="${UPSTREAM_TAG}-cast"
+          git tag "$CAST_TAG"
+          git push origin "$CAST_TAG"
+          echo "cast_tag=$CAST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Trigger release build
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run release.yml \
+            --ref main \
+            -f tag=${{ steps.sync.outputs.cast_tag }}
+
+      - name: Alert on rebase failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Sync conflict: ${{ needs.check.outputs.upstream_tag }}" \
+            --body "Automated sync with upstream failed due to rebase conflicts.
+
+          **Upstream release:** \`${{ needs.check.outputs.upstream_tag }}\`
+
+          ### Manual resolution
+          \`\`\`bash
+          git remote add upstream https://github.com/microsoft/terminal.git
+          git fetch upstream main --tags
+
+          git checkout main
+          git rebase upstream/main
+          # resolve any conflicts
+          git push origin main --force-with-lease
+
+          git checkout feature/asciicast
+          git rebase main
+          # resolve any conflicts
+          git push origin feature/asciicast --force-with-lease
+          \`\`\`" \
+            --label "sync-conflict"

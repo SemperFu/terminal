@@ -1,0 +1,59 @@
+name: Publish to winget
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: Extract version and URLs
+        id: info
+        shell: pwsh
+        run: |
+          $tag = "${{ github.event.release.tag_name }}"
+          $version = $tag -replace '^v' -replace '-cast$'
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo "tag=$tag" >> $env:GITHUB_OUTPUT
+
+          # Build download URLs from the release
+          $baseUrl = "https://github.com/${{ github.repository }}/releases/download/$tag"
+          $x64Url = "$baseUrl/Terminal-Cast-${version}-x64.zip"
+          $arm64Url = "$baseUrl/Terminal-Cast-${version}-ARM64.zip"
+          echo "x64_url=$x64Url" >> $env:GITHUB_OUTPUT
+          echo "arm64_url=$arm64Url" >> $env:GITHUB_OUTPUT
+
+          Write-Host "Version: $version"
+          Write-Host "x64 URL: $x64Url"
+          Write-Host "ARM64 URL: $arm64Url"
+
+      - name: Download wingetcreate
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://aka.ms/wingetcreate/latest" -OutFile wingetcreate.exe
+
+      - name: Create or update winget manifest
+        shell: pwsh
+        env:
+          WINGET_CREATE_GITHUB_TOKEN: ${{ secrets.WINGET_TOKEN }}
+        run: |
+          $version = "${{ steps.info.outputs.version }}"
+          $x64Url = "${{ steps.info.outputs.x64_url }}"
+          $arm64Url = "${{ steps.info.outputs.arm64_url }}"
+
+          # Update manifest and submit PR to winget-pkgs
+          .\wingetcreate.exe update SemperFu.TerminalCast `
+            --submit `
+            --version $version `
+            --urls $x64Url $arm64Url `
+            --token $env:WINGET_CREATE_GITHUB_TOKEN
+
+      - name: Note about first submission
+        if: failure()
+        shell: pwsh
+        run: |
+          Write-Host "::warning::If this is the first release, you need to manually create the initial winget manifest."
+          Write-Host "::warning::See: https://learn.microsoft.com/windows/package-manager/package/manifest"
+          Write-Host "::warning::Package ID: SemperFu.TerminalCast"
+          Write-Host "::warning::After the first manual submission, subsequent updates will be automated."

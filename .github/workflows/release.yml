@@ -1,0 +1,77 @@
+name: Release Terminal-Cast
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g., v1.22.10032.0-cast)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      ref: ${{ inputs.tag }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Terminal-Cast-x64
+          path: artifacts/
+
+      - name: Download ARM64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Terminal-Cast-ARM64
+          path: artifacts/
+
+      - name: Prepare release assets
+        id: version
+        run: |
+          TAG="${{ inputs.tag }}"
+          VERSION="${TAG#v}"
+          VERSION="${VERSION%-cast}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+          cd artifacts
+          mv Terminal-Cast-x64.zip "Terminal-Cast-${VERSION}-x64.zip"
+          mv Terminal-Cast-ARM64.zip "Terminal-Cast-${VERSION}-ARM64.zip"
+          ls -la
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
+
+          gh release create "$TAG" \
+            --repo "${{ github.repository }}" \
+            --title "Terminal-Cast v${VERSION}" \
+            --notes "## Terminal-Cast v${VERSION}
+
+          Windows Terminal with asciicast recording and playback support.
+
+          ### Downloads
+          | File | Architecture |
+          |------|-------------|
+          | \`Terminal-Cast-${VERSION}-x64.zip\` | x64 (Intel/AMD) |
+          | \`Terminal-Cast-${VERSION}-ARM64.zip\` | ARM64 |
+
+          ### Installation
+          Extract the zip and run \`WindowsTerminal.exe\`. This is a portable build — settings are stored next to the executable.
+
+          Or install via winget:
+          \`\`\`
+          winget install SemperFu.TerminalCast
+          \`\`\`" \
+            artifacts/Terminal-Cast-${VERSION}-x64.zip \
+            artifacts/Terminal-Cast-${VERSION}-ARM64.zip
