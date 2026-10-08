@@ -14,6 +14,7 @@ namespace winrt::TerminalApp::implementation
         til::typed_event<IPaneContent> TabColorChanged;
         til::typed_event<IPaneContent> TaskbarProgressChanged;
         til::typed_event<IPaneContent> ReadOnlyChanged;
+        til::typed_event<IPaneContent> RecordingChanged;
         til::typed_event<IPaneContent> FocusRequested;
         til::typed_event<IPaneContent, winrt::TerminalApp::NotificationEventArgs> NotificationRequested;
 

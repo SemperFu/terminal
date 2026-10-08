@@ -88,6 +88,7 @@ namespace winrt::TerminalApp::implementation
             winrt::Microsoft::Terminal::Control::TermControl::TabColorChanged_revoker _TabColorChanged;
             winrt::Microsoft::Terminal::Control::TermControl::SetTaskbarProgress_revoker _SetTaskbarProgress;
             winrt::Microsoft::Terminal::Control::TermControl::ReadOnlyChanged_revoker _ReadOnlyChanged;
+            winrt::Microsoft::Terminal::Control::TermControl::RecordingChanged_revoker _RecordingChanged;
             winrt::Microsoft::Terminal::Control::TermControl::FocusFollowMouseRequested_revoker _FocusFollowMouseRequested;
             winrt::Microsoft::Terminal::Control::TermControl::ShowNotification_revoker _ShowNotification;
 
@@ -104,6 +105,7 @@ namespace winrt::TerminalApp::implementation
         void _controlTabColorChanged(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::Foundation::IInspectable& args);
         void _controlSetTaskbarProgress(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::Foundation::IInspectable& args);
         void _controlReadOnlyChanged(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::Foundation::IInspectable& args);
+        void _controlRecordingChanged(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::Foundation::IInspectable& args);
         void _controlFocusFollowMouseRequested(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::Foundation::IInspectable& args);
         void _controlShowNotification(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Microsoft::Terminal::Control::ShowNotificationEventArgs& args);
 

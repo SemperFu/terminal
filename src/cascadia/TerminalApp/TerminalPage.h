@@ -632,6 +632,8 @@ namespace winrt::TerminalApp::implementation
 
         void _activePaneChanged(winrt::TerminalApp::Tab tab, Windows::Foundation::IInspectable args);
         safe_void_coroutine _doHandleSuggestions(Microsoft::Terminal::Settings::Model::SuggestionsArgs realArgs);
+        safe_void_coroutine _toggleRecordingHelper();
+        safe_void_coroutine _openCastFileHelper(winrt::hstring pathArg = {});
 
         void _SendDesktopNotification(const winrt::hstring& tabTitle, const winrt::hstring& body, const winrt::com_ptr<Tab>& tab, const winrt::TerminalApp::IPaneContent& content);
 

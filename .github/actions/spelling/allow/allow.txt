@@ -2,6 +2,8 @@ aci
 addref
 allcolors
 Affordance
+asciicast
+asciinema
 breadcrumb
 breadcrumbs
 ccmp

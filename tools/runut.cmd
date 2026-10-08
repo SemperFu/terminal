@@ -24,6 +24,7 @@ if "%PLATFORM%" == "Win32" (
     %OPENCON%\bin\%PLATFORM%\%_LAST_BUILD_CONF%\til.unit.tests.dll ^
     %OPENCON%\bin\%PLATFORM%\%_LAST_BUILD_CONF%\UnitTests_TerminalApp\Terminal.App.Unit.Tests.dll ^
     %OPENCON%\bin\%PLATFORM%\%_LAST_BUILD_CONF%\UnitTests_Control\Control.Unit.Tests.dll ^
+    %OPENCON%\bin\%PLATFORM%\%_LAST_BUILD_CONF%\UnitTests_TerminalConnection\Terminal.Connection.Unit.Tests.dll ^
     %_TestHostAppPath%\TerminalApp.LocalTests.dll ^
     %*
 

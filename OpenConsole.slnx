@@ -676,6 +676,17 @@
       <Build Solution="Fuzzing|x64" Project="false" />
       <Build Solution="Fuzzing|x86" Project="false" />
     </Project>
+    <Project Path="src/cascadia/UnitTests_TerminalConnection/UnitTests_TerminalConnection.vcxproj" Id="b3a0e882-3b4c-4b4e-8b3a-f1e2d3c4b5a6">
+      <BuildDependency Project="src/cascadia/TerminalConnection/TerminalConnection.vcxproj" />
+      <Platform Solution="*|Any CPU" Project="Win32" />
+      <Build Solution="*|Any CPU" Project="false" />
+      <Build Solution="AuditMode|ARM64" Project="false" />
+      <Build Solution="AuditMode|x64" Project="false" />
+      <Build Solution="AuditMode|x86" Project="false" />
+      <Build Solution="Fuzzing|ARM64" Project="false" />
+      <Build Solution="Fuzzing|x64" Project="false" />
+      <Build Solution="Fuzzing|x86" Project="false" />
+    </Project>
     <Project Path="src/cascadia/UnitTests_TerminalCore/UnitTests.vcxproj" Id="2c2beef4-9333-4d05-b12a-1905cbf112f9">
       <BuildDependency Project="src/host/ut_lib/host.unittest.vcxproj" />
       <Platform Solution="*|Any CPU" Project="Win32" />

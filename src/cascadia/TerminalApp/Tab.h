@@ -153,6 +153,9 @@ namespace winrt::TerminalApp::implementation
         winrt::Windows::UI::Xaml::Controls::MenuFlyoutItem _closeOtherTabsMenuItem{};
         winrt::Windows::UI::Xaml::Controls::MenuFlyoutItem _closeTabsAfterMenuItem{};
         winrt::Windows::UI::Xaml::Controls::MenuFlyoutItem _closePaneMenuItem{};
+        winrt::Windows::UI::Xaml::Controls::MenuFlyoutSubItem _asciicastSubMenu{};
+        winrt::Windows::UI::Xaml::Controls::MenuFlyoutItem _recordingSubMenuItem{};
+        winrt::Windows::UI::Xaml::Controls::MenuFlyoutItem _openCastSubMenuItem{};
         winrt::TerminalApp::ShortcutActionDispatch _dispatch;
         Microsoft::Terminal::Settings::Model::IActionMapView _actionMap{ nullptr };
         winrt::hstring _keyChord{};
@@ -186,6 +189,7 @@ namespace winrt::TerminalApp::implementation
             winrt::TerminalApp::IPaneContent::TaskbarProgressChanged_revoker TaskbarProgressChanged;
             winrt::TerminalApp::IPaneContent::ConnectionStateChanged_revoker ConnectionStateChanged;
             winrt::TerminalApp::IPaneContent::ReadOnlyChanged_revoker ReadOnlyChanged;
+            winrt::TerminalApp::IPaneContent::RecordingChanged_revoker RecordingChanged;
             winrt::TerminalApp::IPaneContent::FocusRequested_revoker FocusRequested;
             winrt::TerminalApp::IPaneContent::NotificationRequested_revoker NotificationRequested;
 
@@ -232,6 +236,8 @@ namespace winrt::TerminalApp::implementation
 
         void _RecalculateAndApplyReadOnly();
 
+        void _UpdateRecordingState();
+
         void _UpdateProgressState();
 
         void _UpdateConnectionClosedState();
@@ -264,6 +270,7 @@ namespace winrt::TerminalApp::implementation
         void _closePaneClicked(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::UI::Xaml::RoutedEventArgs& e);
         void _exportTextClicked(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::UI::Xaml::RoutedEventArgs& e);
         void _findClicked(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::UI::Xaml::RoutedEventArgs& e);
+        void _toggleRecordingClicked(const winrt::Windows::Foundation::IInspectable& sender, const winrt::Windows::UI::Xaml::RoutedEventArgs& e);
 
         void _bubbleRestartTerminalRequested(TerminalApp::TerminalPaneContent sender, const winrt::Windows::Foundation::IInspectable& args);
 

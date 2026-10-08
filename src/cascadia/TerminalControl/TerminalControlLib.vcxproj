@@ -44,6 +44,9 @@
     <ClInclude Include="SearchBoxControl.h">
       <DependentUpon>SearchBoxControl.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="PlaybackBar.h">
+      <DependentUpon>PlaybackBar.xaml</DependentUpon>
+    </ClInclude>
     <ClInclude Include="XamlLights.h">
       <DependentUpon>XamlLights.idl</DependentUpon>
     </ClInclude>
@@ -61,6 +64,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ControlCore.cpp" />
+    <ClCompile Include="..\TerminalConnection\AsciicastRecorder.cpp" />
     <ClCompile Include="ControlInteractivity.cpp" />
     <ClCompile Include="ScrollBarVisualStateManager.cpp">
       <DependentUpon>ScrollBarVisualStateManager.idl</DependentUpon>
@@ -74,6 +78,9 @@
     </ClCompile>
     <ClCompile Include="SearchBoxControl.cpp">
       <DependentUpon>SearchBoxControl.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="PlaybackBar.cpp">
+      <DependentUpon>PlaybackBar.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="XamlLights.cpp">
       <DependentUpon>XamlLights.idl</DependentUpon>
@@ -100,6 +107,9 @@
     <Midl Include="SearchBoxControl.idl">
       <DependentUpon>SearchBoxControl.xaml</DependentUpon>
     </Midl>
+    <Midl Include="PlaybackBar.idl">
+      <DependentUpon>PlaybackBar.xaml</DependentUpon>
+    </Midl>
     <Midl Include="XamlLights.idl" />
     <Midl Include="TermControl.idl">
       <DependentUpon>TermControl.xaml</DependentUpon>
@@ -109,6 +119,9 @@
   <!-- ========================= XAML Files ======================== -->
   <ItemGroup>
     <Page Include="SearchBoxControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PlaybackBar.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="TermControl.xaml">
